@@ -23,7 +23,7 @@ public class CustomRealm extends AuthorizingRealm {
     Map<String,String> userMap = new HashMap<>();
 
     {
-        userMap.put("cjq","d44646a1d6a571931d4191a09a4d0baa");
+        userMap.put("cjq","6d145ea50ef2fb6b97ac6ff03382f2b6");
 
         //设置Realm的名字
         super.setName("customRealm");
@@ -110,7 +110,7 @@ public class CustomRealm extends AuthorizingRealm {
 
     public static void main(String[] args) {
 
-        Md5Hash md5 = new Md5Hash("123456","RandomNum");
+        Md5Hash md5 = new Md5Hash("1","RandomNum");
         System.out.println(md5);//d44646a1d6a571931d4191a09a4d0baa
     }
 
