@@ -40,6 +40,16 @@ public class UserController {
 
 
     /**
+     *
+     * @return
+     */
+    @RequestMapping(value = "testUser",method = RequestMethod.GET)
+    @ResponseBody
+    public String testUser(){
+        return "testUser Success";
+    }
+
+    /**
      * 需要指定角色才能访问，否则报错
      * @return
      */
@@ -108,6 +118,8 @@ public class UserController {
 
         return "testRole4 Success";
     }
+
+
 
     @RequestMapping(value = "testP2",method = RequestMethod.GET)
     @ResponseBody

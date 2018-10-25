@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="login.html"/>
+        <property name="unauthorizedUrl" value="403.html" />
+        <property name="filterChainDefinitions">
+            <!--roles里面加两个角色说明需要同时具备两个角色才能访问-->
+            <!--perms里面加两个权限说明需要同时具备两个权限才能访问-->
+            <value>
+                /login.html = anon
+                /subLogin = anon
+                /testRole2 = roles["admin"]
+                /testRole3 = roles["admin","admin1"]
+                /testRole4 = rolesOr["admin","admin1"]
+                /testUser = user
+                /testP2 = perms["user:delete"]
+                /testP3 = perms["user:delete","user:query"]
+                /* = authc
+            </value>
+        </property>
+        <property name="filters">
+            <util:map>
+                    <entry  key="rolesOr" value-ref="roleOrFilter"/>
+            </util:map>
+
+        </property>
+
+    </bean>
+    <!--定义filter-->
+    <bean id="roleOrFilter" class="com.cui.filter.RoleOrFilter"/>
+
+    <!-- 创建securityManager -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="customRealm"/>
+        <property name="sessionManager" ref="customSessionManager"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="rememberMeManager" ref="cookieRememberMeManager"/>
+    </bean>
+
+    <bean id="customRealm" class="com.cui.realm.CustomRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+
+
+    <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="1"/>
+    </bean>
+
+
+    <bean id="customSessionManager" class="com.cui.session.CustomSessionManager">
+    <!--<bean id="customSessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">-->
+            <property name="sessionDAO" ref="sessionDao"/>
+    </bean>
+    <!--重写sessionDao是把session存储到redis-->
+    <bean id="sessionDao" class="com.cui.session.RedisSessionDao" />
+
+    <!--重写cacheManager是把权限数据存储到redis，减轻mysql的压力-->
+    <bean id="cacheManager" class="com.cui.cache.RedisCacheManager" />
+
+    <!--记住密码   个人感觉没什么用  网上说只有在访问级别设置为user的请求才能不登录就可以访问，一般都是设置成authc，所以大部分访问不了-->
+    <bean id="cookieRememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager" >
+        <property name="cookie" ref="cookie"/>
+    </bean>
+    <bean id="cookie" class="org.apache.shiro.web.servlet.SimpleCookie" >
+        <constructor-arg value="rememberMe"/>
+        <property name="maxAge" value="100000" />
+    </bean>
+</beans>
