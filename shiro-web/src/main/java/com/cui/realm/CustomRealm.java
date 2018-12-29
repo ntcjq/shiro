@@ -69,7 +69,9 @@ public class CustomRealm extends AuthorizingRealm {
         if(password == null){
             return null;
         }
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(username,password,"customRealm");
+//        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(username,password,"customRealm");
+        //两种写法都可以
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(username,password,getName());
         authenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("RandomNum"));
         return authenticationInfo;
     }
